@@ -23,7 +23,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = '';
+if (isset($_SERVER['HTTP_HOST'])) {
+    if ($_SERVER['HTTP_HOST'] == 'localhost') {
+        $config['base_url'] = '';
+    } else {
+        $config['base_url'] = 'https://lightgreen-gerbil-604494.hostingersite.com/';
+    }
+}
 
 /*
 |--------------------------------------------------------------------------
