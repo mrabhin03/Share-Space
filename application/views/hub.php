@@ -344,7 +344,7 @@
 
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(textToCopy)
-              .then(() => alert("Copied: " + textToCopy))
+              .then(() => console.log("Copied"))
               .catch(err => console.error("Clipboard error:", err));
           } else {
             console.warn("Clipboard API not supported, using fallback.");
