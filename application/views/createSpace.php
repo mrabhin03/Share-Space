@@ -123,7 +123,7 @@
     document.getElementById("code").innerText = code;
     const qr = new QRious({
       element: document.getElementById("qr"),
-      value: "https://lightgreen-gerbil-604494.hostingersite.com/index.php/Space/Join?Code="+code,
+      value: "<?=site_url("Space/Join")?>?Code="+code,
       size: 200
     });
   </script>
