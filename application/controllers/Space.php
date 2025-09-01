@@ -176,7 +176,7 @@ class Space extends CI_Controller {
 			'msg.SpaceCode = connects.SpaceCode AND msg.DeviceID = connects.DeviceID',
 			'inner'
 		);
-		$this->db->where('msg.SpaceCode', $Code);
+		$this->db->where('msg.SpaceCode', $Code)->order_by('DateTime');
 		$query = $this->db->get();
         $result = $query->result_array();
 		header('Content-Type: application/json');
