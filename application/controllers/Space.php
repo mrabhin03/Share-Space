@@ -133,11 +133,36 @@ class Space extends CI_Controller {
 
 	public function SentMessage(){
 		$Msg = $this->input->post('msg');
+		$Type = $this->input->post('type');
 		$Code= $this->session->userdata('Code');
+		if (!empty($_FILES['file']['name'])) {
+			$uploadPath = FCPATH . "TheFiles/" . $Code; 
+			if (!is_dir($uploadPath)) {
+				mkdir($uploadPath, 0777, true);
+			}
+
+			$config['upload_path']   = $uploadPath;
+			$config['allowed_types'] = '*';
+			$config['file_name']     = time() . "_" . $_FILES['file']['name']; 
+			$this->load->library('upload', $config);
+
+			if ($this->upload->do_upload('file')) {
+				$fileData = $this->upload->data();
+				$Msg = $fileData['file_name']; 
+			} else {
+				echo json_encode([
+					'status'  => 'error',
+					'message' => $this->upload->display_errors()
+				]);
+				return;
+			}
+		}
+		
 		$this->db->insert('msg', array(
 			'SpaceCode' => 	$Code,
 			'DeviceID'	=> 	$this->DeviceID,
 			'Msg'		=>	$Msg,
+			'Type'		=>	$Type
 		));
 	}
 

@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
   <style>
-    
+
     * {
       margin: 0;
       padding: 0;
@@ -51,6 +51,7 @@
       flex-direction:column;
       word-wrap: break-word;
       overflow-wrap: break-word;
+      cursor: pointer !important;
     }
     .msg span:first-child{
         font-size:10px;
@@ -199,6 +200,30 @@
       color: white;
       cursor: pointer;
     }
+    .filedownload{
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 10px;
+      margin-top: 8px;
+    }
+    .other .filedownload{
+      background-color: gray;
+    }
+    .me .filedownload{
+      background-color: #05a8bf;
+    }
+    .filedownload ion-icon{
+      font-size:20px;
+    }
+    .other .urlC{
+      color: #06b5eaff
+    }
+    .me .urlC{
+      color: #63eaff
+    }
   </style>
 </head>
 <body>
@@ -214,13 +239,13 @@
       <a href="<?=site_url("Space/Logout")?>"><button class='logout'>Logout</button></a>
     </div>
   </header>
-
   <div class="chat-container" id="chatBox">
     
   </div>
 
   <div class="input-container">
     <input type="text" id="msgInput" placeholder="Type your message..." >
+    <button onclick='fileSend()' style='padding:0 10px;display:grid;place-items:center;font-size:21px;'><ion-icon name="document-outline"></ion-icon></button>
     <button onclick="sendMsg()">Send</button>
   </div>
 
@@ -230,15 +255,30 @@
     const chatBox = document.getElementById("chatBox");
     function sendMsg() {
       const input = document.getElementById("msgInput");
-      const msg = input.value.trim();
-      if (msg === "") return;
-      input.value = "";
-      sentMsg(msg);
+      if(input.type=='text'){
+        const msg = input.value.trim();
+        if (msg === "") return;
+        input.value = "";
+        sentMsg(msg,input.type);
+      }else{
+        sentMsg("",input.type);
+        input.type='text'
+      }
     }
 
-    function sentMsg(msg){
+    function sentMsg(msg,type){
       const data = new FormData();
         data.append("msg", msg);
+        data.append("type", type);
+        if(type=='file'){
+          const fileInput = document.getElementById("msgInput");
+          const file = fileInput.files[0]; 
+          if (!file) {
+            alert("Please select a file first!");
+            return;
+          }
+          data.append("file", file);
+        }
 
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "SentMessage", true);
@@ -298,15 +338,32 @@
         }
         const msgDiv = document.createElement("div");
         msgDiv.classList.add("msg", className);
-        msgDiv.innerHTML = `<span>${Name}</span><span>${makeLinks(Msg[i].Msg)}</span>`;
+        msgDiv.innerHTML = `<span>${Name}</span><span>${makeOut(Msg[i].Msg,Msg[i].Type)}</span>`;
+        msgDiv.addEventListener("dblclick", () => {
+          const textToCopy = `${Msg[i].Msg}`;
+
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(textToCopy)
+              .then(() => alert("Copied: " + textToCopy))
+              .catch(err => console.error("Clipboard error:", err));
+          } else {
+            console.warn("Clipboard API not supported, using fallback.");
+            fallbackCopy(textToCopy);
+          }
+        });
         chatBox.appendChild(msgDiv);
       }
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-
-    function openQR(){
-      alert("KK")
+    function fallbackCopy(text) {
+      const temp = document.createElement("textarea");
+      temp.value = text;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand("copy");
+      document.body.removeChild(temp);
     }
+
     const code = `<?=$Code?>`;
     const qr = new QRious({
       element: document.getElementById("qr"),
@@ -314,12 +371,23 @@
       size: 200
     });
 
+
     function openQR(){
       const Dis=document.getElementById("qrDisplay");
       if(Dis.classList.contains("ActiveQr")){
         Dis.classList.remove("ActiveQr");
       }else{
         Dis.classList.add("ActiveQr");
+      }
+    }
+    function makeOut(Msg,Type){
+      if(Type=='text'){
+        return makeLinks(Msg)
+      }else{
+        return `<a href='<?=base_url('TheFiles/'.$Code)?>/${Msg}' class='filedownload' download>
+          <ion-icon name="document-outline"></ion-icon>
+          ${Msg}
+        </a>`
       }
     }
     function makeLinks(text) {
@@ -330,9 +398,19 @@
         if (!href.match(/^https?:\/\//)) {
           href = "http://" + href; 
         }
-        return `<a style='color: #06b5eaff' href="${href}" target="_blank">${url}</a>`;
+        return `<a class='urlC'  href="${href}" target="_blank">${url}</a>`;
       });
     }
+    function fileSend(){
+      const inputBox=document.getElementById("msgInput")
+      if(inputBox.type=='file'){
+        inputBox.type='text'
+      }else{
+        inputBox.type='file'
+      }
+    }
   </script>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>
 </html>
