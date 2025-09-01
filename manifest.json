@@ -1,0 +1,23 @@
+{
+    "name": "Connect",
+    "short_name": "Connect",
+    "description": "Easily connect your laptop and phone in a shared online space. Create or join a space, sync devices instantly with QR codes, and chat seamlessly across devices.",
+    "version": "1.0",
+    "start_url": "index.php",
+    "display": "standalone",
+    "background_color": "#050c47",
+    "theme_color": "#050c47",
+    "icons": [
+      {
+        "src": "assets/Logo192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "assets/Logo512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+  
