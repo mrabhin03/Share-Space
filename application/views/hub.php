@@ -328,7 +328,7 @@
 
         xhr.onload = function () {
           if (xhr.status === 200) {
-            fileSending=true;
+            fileSending=false;
             loader.remove()
             console.log("Response:", xhr.responseText);
           } else {
