@@ -492,7 +492,7 @@
       const ext = Msg.split('.').pop().toLowerCase();
 
       if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext)) {
-        return `<img style="max-width:400px;margin-top:5px;border-radius:5px;width:100%;height:auto" src="${url}">`;
+        return `<img style="max-width:400px;margin-top:5px;border-radius:5px;width:100%;height:auto;max-height:400px;object-fit: cover;" src="${url}">`;
       } 
       else if (["mp4", "webm", "ogg"].includes(ext)) {
         return `<video style="max-width:400px;margin-top:5px;border-radius:5px;width:100%" controls>
