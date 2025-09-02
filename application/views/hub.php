@@ -200,24 +200,40 @@
       color: white;
       cursor: pointer;
     }
-    .filedownload{
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      border-radius: 10px;
-      margin-top: 8px;
-    }
-    .other .filedownload{
-      background-color: gray;
-    }
-    .me .filedownload{
-      background-color: #05a8bf;
-    }
-    .filedownload ion-icon{
-      font-size:20px;
-    }
+    .filedownload {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 10px;
+  margin-top: 8px;
+
+  /* NEW */
+  max-width: 100%; 
+  text-decoration: none;
+}
+
+.filedownload span {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.other .filedownload {
+  background-color: gray;
+}
+
+.me .filedownload {
+  background-color: #05a8bf;
+}
+
+.filedownload ion-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
     .other .urlC{
       color: #06b5eaff
     }
@@ -266,19 +282,44 @@
       }
     }
 
+    function TheFileSender(){
+      const fileInput = document.getElementById("msgInput");
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please select a file first!");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const blob = new Blob([e.target.result], { type: file.type });
+        const data = new FormData();
+        data.append("file", blob, file.name);
+        data.append("type", 'file');
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "SentMessage", true);
+
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            console.log("Response:", xhr.responseText);
+          } else {
+            console.error("Error:", xhr.statusText);
+          }
+        };
+
+        xhr.send(data);
+      };
+      reader.readAsArrayBuffer(file);
+
+    }
+
     function sentMsg(msg,type){
-      const data = new FormData();
+        if(type=='file'){
+          TheFileSender()
+          return;
+        }
+        const data = new FormData();
         data.append("msg", msg);
         data.append("type", type);
-        if(type=='file'){
-          const fileInput = document.getElementById("msgInput");
-          const file = fileInput.files[0]; 
-          if (!file) {
-            alert("Please select a file first!");
-            return;
-          }
-          data.append("file", file);
-        }
 
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "SentMessage", true);
@@ -386,7 +427,7 @@
       }else{
         return `<a href='<?=base_url('TheFiles/'.$Code)?>/${Msg}' class='filedownload' download>
           <ion-icon name="document-outline"></ion-icon>
-          ${Msg}
+          <span>${Msg}</span>
         </a>`
       }
     }
