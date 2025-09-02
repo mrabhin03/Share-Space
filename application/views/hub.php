@@ -201,16 +201,14 @@
       cursor: pointer;
     }
     .filedownload {
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-radius: 10px;
-  margin-top: 8px;
-
-  /* NEW */
-  max-width: 100%; 
-  text-decoration: none;
+      max-width:400px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 10px;
+      margin-top: 8px;
+      text-decoration: none;
 }
 
 .filedownload span {
@@ -459,7 +457,10 @@
       if(Type=='text'){
         return makeLinks(Msg)
       }else{
-        return `<a href='<?=base_url('TheFiles/'.$Code)?>/${Msg}' class='filedownload' download>
+        const ele=getFilePreview(Msg,"<?= $Code ?>");
+         return `
+        ${ele}
+        <a href='<?=base_url('TheFiles/'.$Code)?>/${Msg}' class='filedownload' download>
           <ion-icon name="document-outline"></ion-icon>
           <span>${Msg}</span>
         </a>`
@@ -482,6 +483,35 @@
         inputBox.type='text'
       }else{
         inputBox.type='file'
+      }
+    }
+
+    function getFilePreview(Msg, Code) {
+      const base = "<?=base_url('TheFiles/'.$Code)?>";
+      const url = `${base}/${Msg}`;
+      const ext = Msg.split('.').pop().toLowerCase();
+
+      if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext)) {
+        return `<img style="max-width:400px;margin-top:5px;border-radius:5px;width:100%;height:auto" src="${url}">`;
+      } 
+      else if (["mp4", "webm", "ogg"].includes(ext)) {
+        return `<video style="max-width:400px;margin-top:5px;border-radius:5px;width:100%" controls>
+                  <source src="${url}" type="video/${ext}">
+                  Your browser does not support the video tag.
+                </video>`;
+      } 
+      else if (["mp3", "wav", "ogg"].includes(ext)) {
+        return `<audio style="margin-top:5px;width:100%" controls>
+                  <source src="${url}" type="audio/${ext}">
+                  Your browser does not support the audio tag.
+                </audio>`;
+      } 
+      else if (["pdf"].includes(ext)) {
+        return `<embed src="${url}" type="application/pdf" 
+                      style="max-width:400px;margin-top:5px;border-radius:5px;width:100%;height:300px" />`;
+      } 
+      else {
+        return ``;
       }
     }
   </script>
