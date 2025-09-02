@@ -240,6 +240,25 @@
     .me .urlC{
       color: #63eaff
     }
+    .load{
+      width: 20px;
+      height: 20px;
+      animation: load .7s linear infinite;
+      border-radius: 50%;
+      border: 3px solid white;
+      border-top: 3px solid transparent;
+    }
+    @keyframes load {
+      0%{
+        transform:rotate(0deg);
+      }
+      30%{
+        transform:rotate(180deg);
+      }
+      100%{
+        transform:rotate(360deg);
+      }
+    }
   </style>
 </head>
 <body>
@@ -256,7 +275,7 @@
     </div>
   </header>
   <div class="chat-container" id="chatBox">
-    
+      
   </div>
 
   <div class="input-container">
@@ -266,6 +285,7 @@
   </div>
 
   <script>
+    let fileSending=false;
     const HostID=`<?=$HostID?>`;
     const DeviceID=`<?=$DeviceID?>`;
     const chatBox = document.getElementById("chatBox");
@@ -289,6 +309,14 @@
         alert("Please select a file first!");
         return;
       }
+      fileSending=true
+      const loader=document.createElement("div");
+      loader.classList.add("msg", "me");
+      loader.id='uploading';
+      loader.innerHTML=`<div class='load'></div>`
+      chatBox.appendChild(loader);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
       const reader = new FileReader();
       reader.onload = function (e) {
         const blob = new Blob([e.target.result], { type: file.type });
@@ -300,6 +328,8 @@
 
         xhr.onload = function () {
           if (xhr.status === 200) {
+            fileSending=true;
+            loader.remove()
             console.log("Response:", xhr.responseText);
           } else {
             console.error("Error:", xhr.statusText);
@@ -313,6 +343,10 @@
     }
 
     function sentMsg(msg,type){
+      if(fileSending){
+        alert("Wait till the file is uploaded")
+        return;
+      }
         if(type=='file'){
           TheFileSender()
           return;
