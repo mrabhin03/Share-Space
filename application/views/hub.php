@@ -290,6 +290,10 @@
     const DeviceID=`<?=$DeviceID?>`;
     const chatBox = document.getElementById("chatBox");
     function sendMsg() {
+      if(fileSending){
+        alert("Wait till the file is uploaded")
+        return;
+      }
       const input = document.getElementById("msgInput");
       if(input.type=='text'){
         const msg = input.value.trim();
@@ -343,10 +347,6 @@
     }
 
     function sentMsg(msg,type){
-      if(fileSending){
-        alert("Wait till the file is uploaded")
-        return;
-      }
         if(type=='file'){
           TheFileSender()
           return;
